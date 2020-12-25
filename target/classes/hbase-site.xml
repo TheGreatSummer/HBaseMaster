@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://master:9000/hbase</value>
+    </property>
+
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>2181</value>
+    </property>
+
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>master,node1,node2</value>
+    </property>
+
+    <property>
+        <name>hbase.zookeeper.property.dataDir</name>
+        <value>/opt/SoftWare/zookeeper-3.4.14/zkdatas</value>
+    </property>
+
+    <!-- HMaster.... -->
+    <property>
+        <name>hbase.master.info.bindAddress</name>
+        <value>master</value>
+        <description>HBase Master Web UI0.0.0.0</description>
+    </property>
+
+    <property>
+        <name>hbase.master.info.port</name>
+        <value>16010</value>
+        <description>HBase Master Web UIWeb UI</description>
+    </property>
+    <!-- HRegionServer.... -->
+
+    <property>
+        <name>hbase.regionserver.port</name><value>16020</value>
+        <description>The port the HBase RegionServer binds to.</description>
+    </property>
+
+    <property>
+        <name>hbase.regionserver.info.port</name>
+        <value>16030</value>
+        <description>The port for the HBase RegionServer web UI</description>
+    </property>
+
+    <property>
+        <name>hbase.regionserver.info.bindAddress</name>
+        <!--下面这项需要在node1节点上改为node1 -->
+        <value>master</value>
+        <description>The address for the HBase RegionServer web UI</description>
+    </property>
+    <property>
+        <name>hbase.master.maxclockskew</name>
+        <value>18000</value>
+        <description>Time difference of regionserver from master</description>
+    </property>
+</configuration>
