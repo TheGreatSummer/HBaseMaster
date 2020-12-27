@@ -87,7 +87,7 @@ public class HBaseController {
     @GetMapping("/reddos/{tableName}/{rowkey}/{time}/{length}")
     public BoRestResObj getWlidByTablde(@PathVariable("tableName") String tablename,@PathVariable("rowkey") String rowkey,@PathVariable("time") long time,@PathVariable("length") int length) throws IOException {
 
-        List<BoDdosScreenStatus> boDdosScreenStatuses = hBaseService.listAllRowkeyByWlid(tablename, rowkey);
+        List<BoDdosScreenStatus> boDdosScreenStatuses = hBaseService.listDataByWlidAndTm(tablename, rowkey,time,length);
 
         int optres = 0;
         String msg = "failed";
