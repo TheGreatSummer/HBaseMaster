@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 @RestController  //该方法默认使用JSON视图
 @RequestMapping("/tsdb")
@@ -84,8 +83,10 @@ public class HBaseController {
      * @return
      * @throws IOException
      */
-    @GetMapping("/reddos/{tableName}/{rowkey}/{time}/{length}")
-    public BoRestResObj getWlidByTablde(@PathVariable("tableName") String tablename,@PathVariable("rowkey") String rowkey,@PathVariable("time") long time,@PathVariable("length") int length) throws IOException {
+    @GetMapping("/playback/{tableName}/{rowkey}/{time}/{length}")
+    public BoRestResObj getWlidByTablde(@PathVariable("tableName") String tablename,@PathVariable("rowkey") String rowkey,@PathVariable("time") double time,@PathVariable("length") int length) throws IOException {
+
+        System.out.println("开始  。。。");
 
         List<BoDdosScreenStatus> boDdosScreenStatuses = hBaseService.listDataByWlidAndTm(tablename, rowkey,time,length);
 
