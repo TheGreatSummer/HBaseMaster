@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class HBaseDao {
 
-    public static void addDDOSData(BoDdosScreenStatus boDdosScreenStatus,String flag) throws IOException {
+    public static void addDDOSData(BoDdosScreenStatus boDdosScreenStatus,String CJID) throws IOException {
 
         Connection connection = ConnectionFactory.createConnection(Constants.CONFIGURATION);
 
@@ -33,7 +33,8 @@ public class HBaseDao {
 
         long ts = System.currentTimeMillis();
 
-        String rowkey = boDdosScreenStatus.getWlid() +flag+"_"+ ts;
+//        String rowkey = boDdosScreenStatus.getWlid() +"_"+CJID+"_"+ ts;
+        String rowkey = CJID+"_"+ ts;
 
         System.err.println(rowkey);
 
@@ -110,8 +111,8 @@ public class HBaseDao {
         ResultScanner scanner = table.getScanner(scan);
         for (Result res:scanner){
             for(Cell cell:res.rawCells()){
-                String[] key = Bytes.toString(CellUtil.cloneRow(cell)).split("flag");
-
+                String[] key = Bytes.toString(CellUtil.cloneRow(cell)).split("_");
+                System.err.println("rowkey-->"+key[0]);
                 wlid_sets.add(key[0]);
             }
         }
@@ -170,14 +171,16 @@ public class HBaseDao {
             BoDdosScreenStatus boDdosScreenStatus = ParseDataUtils.Data2Object(res);
 
             WriteData.writeContent("ddosdata.txt",boDdosScreenStatus.toString());
-//            try {
-//                TimeUnit.SECONDS.sleep(1);
-//
-//                SendUtil sendUtil = new SendUtil();
-//
-//                sendUtil.sendToWeb(boDdosScreenStatus);
-//
-//            } catch (InterruptedException ie){}
+            try {
+                TimeUnit.SECONDS.sleep(5);
+
+                SendUtil sendUtil = new SendUtil();
+
+                sendUtil.sendToWeb(boDdosScreenStatus);
+
+            } catch (InterruptedException ie){
+                ie.printStackTrace();
+            }
         }
 
     };

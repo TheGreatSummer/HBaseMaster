@@ -5,9 +5,14 @@ import com.summer.hbase.bean.BoDdosScreenStatus;
 import com.summer.hbase.bean.BoRestResObj;
 import com.summer.hbase.dao.HBaseDao;
 import com.summer.hbase.service.HBaseService;
+import com.summer.hbase.websocket.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -25,14 +30,28 @@ public class HBaseController {
         return "hello world";
     }
 
-    @PostMapping(value = "/ddosData/{flag}")
-    public String putDDosData(@RequestBody BoDdosScreenStatus boDdosScreenStatus,@PathVariable("flag") String flag) throws IOException {
+    @GetMapping("page")
+    public ModelAndView page(){
+        System.out.println("page");
+        return new ModelAndView("demo");
+    }
 
-        System.out.println("flag-->"+flag);
+
+    /**
+     * 监听网络靶场平台传输的数据
+     * @param boDdosScreenStatus  网络大屏数据
+     * @return
+     * @throws IOException
+     */
+    @PostMapping(value = "/ddosData")
+    public String putDDosData(@RequestBody BoDdosScreenStatus boDdosScreenStatus) throws IOException {
+
+        String CJID = "10086";
+        System.out.println("CJID-->"+CJID);
         System.out.println("DDoS data->"+JSON.toJSONString(boDdosScreenStatus));
 
-        if(!boDdosScreenStatus.equals(null) && flag != null){
-            HBaseDao.addDDOSData(boDdosScreenStatus,flag);
+        if(!boDdosScreenStatus.equals(null) && CJID != null){
+            HBaseDao.addDDOSData(boDdosScreenStatus,CJID);
         }
 
         return "ok";
@@ -78,16 +97,21 @@ public class HBaseController {
     }
 
     /**
-     * 根据选定的网络ID 罗列全部的rowkey
-     * 并根据rowkey 获取全部对应的数据
-     * @param tablename
+     * @param tablename 表名
+     * @param CJID    攻击场景唯一ID
+     * @param time      时间点
+     * @param length    数据长度
      * @return
      * @throws IOException
      */
-    @GetMapping("/reddos/{tableName}/{rowkey}/{time}/{length}")
-    public BoRestResObj getWlidByTablde(@PathVariable("tableName") String tablename,@PathVariable("rowkey") String rowkey,@PathVariable("time") long time,@PathVariable("length") int length) throws IOException {
+    @GetMapping("/playback/{tableName}/{CJID}/{time}/{length}/{speed}")
+    public BoRestResObj getWlidByTablde(HttpServletRequest request,@PathVariable("tableName") String tablename,@PathVariable("CJID") String CJID,@PathVariable("time") long time,@PathVariable("length") int length,@PathVariable("speed") int speed) throws IOException, InterruptedException {
 
-        List<BoDdosScreenStatus> boDdosScreenStatuses = hBaseService.listDataByWlidAndTm(tablename, rowkey,time,length);
+        HttpSession session = request.getSession();
+        session.setAttribute("plagback_controller",CJID);
+
+
+        List<BoDdosScreenStatus> boDdosScreenStatuses = hBaseService.listDataByWlidAndTm(tablename, CJID,time,length,speed);
 
         int optres = 0;
         String msg = "failed";
@@ -102,6 +126,26 @@ public class HBaseController {
 
         return boRestResObj;
     }
+
+    @GetMapping("/listall")
+    public BoRestResObj listAll() throws IOException {
+        hBaseService.scanAll();
+
+        BoRestResObj boRestResObj = new BoRestResObj(1,"ok",null);
+
+        return  boRestResObj;
+    }
+
+    @GetMapping("/playback/stop/{CJID}")
+    public BoRestResObj remove(@PathVariable("CJID") String CJID) throws IOException {
+
+
+        WebSocketServer.Close(CJID);
+
+        BoRestResObj boRestResObj = new BoRestResObj(1,"close connect success",null);
+        return  boRestResObj;
+    }
+
 
 
 }

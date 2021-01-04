@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Test {
     public static void main(String[] args) throws IOException {
-        BoDdosScreenStatus hh = HBaseDao.getDataByKey("screen:ddos", "Wlid1_1608257063275");
+        BoDdosScreenStatus hh = HBaseDao.getDataByKey("screen:ddos", "454dde98fab94057978d12490feeffcf_1608280152289");
         System.out.println(hh.toString());
 
 //        HBaseUtil.createTable("screen:ddos", Constants.DDOS_TABLE_VERSIONS,Constants.DDOS_TABLE_CF_LINKS,Constants.DDOS_TABLE_CF_SERVERS,

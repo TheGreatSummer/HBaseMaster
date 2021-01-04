@@ -30,8 +30,13 @@ public class SendUtil {
 
     }
 
-    public void sendToTsdb(BoDdosScreenStatus boDdosScreenStatus,String flag){
-        String URL = "http://localhost:8111/tsdb/ddosData/"+flag;
+    /**
+     * 使用Http POST请求，将网络大屏数据发送给时序数据库
+     * @param boDdosScreenStatus 网络大屏数据
+     * @param CJID      场景ID
+     */
+    public void sendToTsdb(BoDdosScreenStatus boDdosScreenStatus,String CJID){
+        String URL = "http://localhost:8111/tsdb/ddosData/"+CJID;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<BoDdosScreenStatus> entity = new HttpEntity<>(boDdosScreenStatus, headers);
