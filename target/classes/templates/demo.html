@@ -52,6 +52,15 @@
             socket.send('{"tableName":"'+$("#tableName").val()+'","CJID":"'+$("#CJID").val()+'","time":"'+$("#time").val()+'","length":"'+$("#length").val()+'","speed":"'+$("#speed").val()+'"}');
         }
     }
+    function stop() {
+        $.ajax({
+            url:"http://localhost:8111/tsdb/playback/stop/"+$("#CJID").val(),
+            success:function(result){
+                alert(result);
+                $("#res").html(result.msg);
+            }});
+
+    }
 </script>
 <body>
 <p>【数据表】：<div><input id="tableName" name="tableName" type="text" value="screen:ddos"></div>
@@ -61,6 +70,9 @@
 <p>【速度】：<div><input id="speed" name="speed" type="text" value="5"></div>
 <p>【操作】：<div><a onclick="openSocket()">建立连接</a></div>
 <p>【操作】：<div><a onclick="sendMessage()">发送回放请求</a></div>
+<p>【暂停】：<div><a onclick="stop()">暂停</a></div>
+
+<p>【结果】：<div id="res"></div></p>
 </body>
 
 </html>

@@ -2,6 +2,7 @@ package com.summer.hbase.dao;
 
 import com.alibaba.fastjson.JSONArray;
 import com.summer.hbase.bean.BoDdosScreenStatus;
+import com.summer.hbase.bean.BoNetStatus;
 import com.summer.hbase.constants.Constants;
 import com.summer.hbase.utils.ParseDataUtils;
 import com.summer.hbase.utils.SendUtil;
@@ -10,26 +11,26 @@ import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.PrefixFilter;
-import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-// 数据库连接部分可做统一规划
 @Service
-public class HBaseDao {
+public class NetMonitorDao {
 
-    public static void addDDOSData(BoDdosScreenStatus boDdosScreenStatus,String yxid) throws IOException {
+
+    public static void addNetMonitorData(BoNetStatus boNetStatus, String yxid) throws IOException {
 
         Connection connection = ConnectionFactory.createConnection(Constants.CONFIGURATION);
 
-        Table ddosTable = connection.getTable(TableName.valueOf(Constants.DDOS_TABLE));
+        Table ddosTable = connection.getTable(TableName.valueOf(Constants.NETMONITOR_TABLE));
 
         long ts = System.currentTimeMillis();
 
@@ -39,17 +40,14 @@ public class HBaseDao {
 
         Put ddosPut = new Put(Bytes.toBytes(rowkey));
 
-        ddosPut.addColumn(Bytes.toBytes(Constants.DDOS_TABLE_CF_WLID),Bytes.toBytes(Constants.DDOS_TABLE_CF_WLID),Bytes.toBytes(JSONArray.toJSONString(boDdosScreenStatus.getWlid())));
+        ddosPut.addColumn(Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_WLID),Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_WLID),Bytes.toBytes(JSONArray.toJSONString(boNetStatus.getWlid())));
 
-        ddosPut.addColumn(Bytes.toBytes(Constants.DDOS_TABLE_CF_TM),Bytes.toBytes(Constants.DDOS_TABLE_CF_TM),Bytes.toBytes(JSONArray.toJSONString(boDdosScreenStatus.getTm())));
+        ddosPut.addColumn(Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_TM),Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_TM),Bytes.toBytes(JSONArray.toJSONString(boNetStatus.getTm())));
 
-        ddosPut.addColumn(Bytes.toBytes(Constants.DDOS_TABLE_CF_LINKS),Bytes.toBytes(Constants.DDOS_TABLE_CF_LINKS),Bytes.toBytes(JSONArray.toJSONString(boDdosScreenStatus.getLinks())));
+        ddosPut.addColumn(Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_LINKS),Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_LINKS),Bytes.toBytes(JSONArray.toJSONString(boNetStatus.getLinks())));
 
-        ddosPut.addColumn(Bytes.toBytes(Constants.DDOS_TABLE_CF_SERVERS),Bytes.toBytes(Constants.DDOS_TABLE_CF_SERVERS),Bytes.toBytes(JSONArray.toJSONString(boDdosScreenStatus.getServers())));
+        ddosPut.addColumn(Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_ERRORDEVS),Bytes.toBytes(Constants.NETMONITOR_TABLE_CF_ERRORDEVS),Bytes.toBytes(JSONArray.toJSONString(boNetStatus.getErrordevs())));
 
-        ddosPut.addColumn(Bytes.toBytes(Constants.DDOS_TABLE_CF_TD),Bytes.toBytes(Constants.DDOS_TABLE_CF_TD),Bytes.toBytes(JSONArray.toJSONString(boDdosScreenStatus.getTd())));
-
-        ddosPut.addColumn(Bytes.toBytes(Constants.DDOS_TABLE_CF_VICST),Bytes.toBytes(Constants.DDOS_TABLE_CF_VICST),Bytes.toBytes(JSONArray.toJSONString(boDdosScreenStatus.getVicSt())));
 
         ddosTable.put(ddosPut);
 
@@ -59,7 +57,7 @@ public class HBaseDao {
 
     }
 
-    public static BoDdosScreenStatus getDataByKey(String tableName,String rwokey) throws IOException {
+    public static BoNetStatus getDataByKey(String tableName, String rwokey) throws IOException {
 
         Connection connection = ConnectionFactory.createConnection(Constants.CONFIGURATION);
 
@@ -70,30 +68,12 @@ public class HBaseDao {
         Result result = table.get(get);
 
 //        System.out.println(result);
-        BoDdosScreenStatus boDdosScreenStatus = ParseDataUtils.Data2DDoSObject(result);
+        BoNetStatus boNetStatus = ParseDataUtils.Data2NetMonitorObject(result);
 
-        return boDdosScreenStatus;
+        return boNetStatus;
 
     }
 
-    public static List<String> getTableByNameSpace() throws IOException {
-        // 可添加对namespace的判断
-        Connection conn = ConnectionFactory.createConnection(Constants.CONFIGURATION);
-        Admin admin = conn.getAdmin();
-        List<String> tablename_list = new ArrayList<String>();
-        TableName[] screens = admin.listTableNamesByNamespace("screen");
-        if (screens.length <= 0) {
-            tablename_list.add("there is nothing");
-            return tablename_list;
-        }
-        for (TableName tb : screens) {
-            tablename_list.add(Bytes.toString(tb.getName()));
-        }
-
-        admin.close();
-        conn.close();
-        return tablename_list;
-    }
     /**
      * 用于获取表中的运行ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ，返回所有的攻击场景名称
      * @param tableName
@@ -126,7 +106,7 @@ public class HBaseDao {
      * @return
      * @throws IOException
      */
-    public static List<BoDdosScreenStatus> getDataByYXIDPrefix(String tableName,String YXID_prefix)throws IOException{
+    public static List<BoNetStatus> getDataByYXIDPrefix(String tableName,String YXID_prefix)throws IOException{
         Connection connection = ConnectionFactory.createConnection(Constants.CONFIGURATION);
 
         Table table = connection.getTable(TableName.valueOf(tableName));
@@ -136,11 +116,11 @@ public class HBaseDao {
         scan.setFilter(prefixFilter);
         scan.setReversed(true);
 
-        ArrayList<BoDdosScreenStatus> res_list = new ArrayList<>();
+        ArrayList<BoNetStatus> res_list = new ArrayList<>();
         ResultScanner scanner = table.getScanner(scan);
         for (Result res:scanner){
-            BoDdosScreenStatus boDdosScreenStatus = ParseDataUtils.Data2DDoSObject(res);
-            res_list.add(boDdosScreenStatus);
+            BoNetStatus boNetStatus = ParseDataUtils.Data2NetMonitorObject(res);
+            res_list.add(boNetStatus);
         }
         connection.close();
         return res_list;
@@ -194,15 +174,15 @@ public class HBaseDao {
         ResultScanner scanner = table.getScanner(scan);
 
         for(Result res: scanner){
-            BoDdosScreenStatus boDdosScreenStatus = ParseDataUtils.Data2DDoSObject(res);
+            BoNetStatus boNetStatus = ParseDataUtils.Data2NetMonitorObject(res);
 
-            WriteData.writeContent("ddosdata.txt",boDdosScreenStatus.toString());
+            WriteData.writeContent("ddosdata.txt",boNetStatus.toString());
             try {
                 TimeUnit.SECONDS.sleep(5);
 
                 SendUtil sendUtil = new SendUtil();
 
-                sendUtil.sendToWeb(boDdosScreenStatus);
+                sendUtil.sendToWeb(boNetStatus);
 
             } catch (InterruptedException ie){
                 ie.printStackTrace();
@@ -210,7 +190,4 @@ public class HBaseDao {
         }
 
     };
-
-
-
 }

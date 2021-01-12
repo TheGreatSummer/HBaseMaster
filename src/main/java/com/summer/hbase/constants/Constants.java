@@ -26,5 +26,13 @@ public class Constants {
     public static int DDOS_TABLE_VERSIONS = 1;
 
 
-    // 待添加
+    // netmonitor表
+    public static  String NETMONITOR_TABLE = "screen:netmonitor";
+    public static String NETMONITOR_TABLE_CF_WLID = "wlid";
+    public static String NETMONITOR_TABLE_CF_TM = "tm";
+    public static String NETMONITOR_TABLE_CF_LINKS = "links";
+    public static String NETMONITOR_TABLE_CF_ERRORDEVS = "errordevs";
+
+    public static int NETMONITOR_TABLE_VERSIONS = 1;
+
 }

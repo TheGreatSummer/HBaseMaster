@@ -9,11 +9,15 @@ import java.io.IOException;
 
 public class Test {
     public static void main(String[] args) throws IOException {
-        BoDdosScreenStatus hh = HBaseDao.getDataByKey("screen:ddos", "454dde98fab94057978d12490feeffcf_1608280152289");
-        System.out.println(hh.toString());
+//        BoDdosScreenStatus hh = HBaseDao.getDataByKey("screen:ddos", "454dde98fab94057978d12490feeffcf_1608280152289");
+//        System.out.println(hh.toString());
 
-//        HBaseUtil.createTable("screen:ddos", Constants.DDOS_TABLE_VERSIONS,Constants.DDOS_TABLE_CF_LINKS,Constants.DDOS_TABLE_CF_SERVERS,
+//        HBaseUtil.createTable("screen:netmonitor", Constants.DDOS_TABLE_VERSIONS,Constants.DDOS_TABLE_CF_LINKS,Constants.DDOS_TABLE_CF_SERVERS,
 //                Constants.DDOS_TABLE_CF_TD,Constants.DDOS_TABLE_CF_TM,Constants.DDOS_TABLE_CF_VICST,Constants.DDOS_TABLE_CF_WLID);
+//        HBaseUtil.crateNameSpace("screen");
+
+
+        HBaseUtil.createTable(Constants.NETMONITOR_TABLE, Constants.NETMONITOR_TABLE_VERSIONS,Constants.NETMONITOR_TABLE_CF_LINKS,Constants.NETMONITOR_TABLE_CF_ERRORDEVS,Constants.NETMONITOR_TABLE_CF_TM,Constants.NETMONITOR_TABLE_CF_WLID);
 
     }
 }

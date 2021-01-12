@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>测试样例</title>
 </head>
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<script src="/templates/js/jquery-3.5.1.min.js"></script>
 <script>
     var socket;
     function openSocket() {
@@ -12,10 +12,7 @@
             console.log("您的浏览器不支持WebSocket");
         }else{
             console.log("您的浏览器支持WebSocket");
-            //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
-            //等同于socket = new WebSocket("ws://localhost:8888/xxxx/im/25");
-            //var socketUrl="${request.contextPath}/im/"+$("#userId").val();
-            var socketUrl="http://localhost:8111/tsdb/playback/"+$("#CJID").val();
+            var socketUrl="http://localhost:8111/tsdb/playback/"+$("#yxid").val();
             socketUrl=socketUrl.replace("https","ws").replace("http","ws");
             console.log(socketUrl);
             if(socket!=null){
@@ -48,19 +45,30 @@
             console.log("您的浏览器不支持WebSocket");
         }else {
             console.log("您的浏览器支持WebSocket");
-            console.log('{"tableName":"'+$("#tableName").val()+'","CJID":"'+$("#CJID").val()+'","time":"'+$("#time").val()+'","length":"'+$("#length").val()+'","speed":"'+$("#speed").val()+'"}');
-            socket.send('{"tableName":"'+$("#tableName").val()+'","CJID":"'+$("#CJID").val()+'","time":"'+$("#time").val()+'","length":"'+$("#length").val()+'","speed":"'+$("#speed").val()+'"}');
+            console.log('{"tableName":"'+$("#tableName").val()+'","yxid":"'+$("#yxid").val()+'","realTime":"'+$("#realTime").val()+'","step":"'+$("#step").val()+'"}');
+            socket.send('{"tableName":"'+$("#tableName").val()+'","yxid":"'+$("#yxid").val()+'","realTime":"'+$("#realTime").val()+'","step":"'+$("#step").val()+'"}');
         }
+    }
+    function stop() {
+        $.ajax({
+            url:"http://localhost:8111/tsdb/playback/stop/"+$("#yxid").val(),
+            success:function(result){
+                alert(result);
+                $("#res").html(result.msg);
+            }});
+
     }
 </script>
 <body>
 <p>【数据表】：<div><input id="tableName" name="tableName" type="text" value="screen:ddos"></div>
-<p>【攻击场景】：<div><input id="CJID" name="CJID" type="text" value="20"></div>
-<p>【起始时间】：<div><input id="time" name="time" type="text" value="10"></div>
-<p>【长度】：<div><input id="length" name="length" type="text" value="5"></div>
-<p>【速度】：<div><input id="speed" name="speed" type="text" value="5"></div>
+<p>【攻击场景】：<div><input id="yxid" name="yxid" type="text" value="20"></div>
+<p>【起始时间】：<div><input id="realTime" name="realTime" type="text" value="10"></div>
+<p>【步长】：<div><input id="step" name="step" type="text" value="5"></div>
 <p>【操作】：<div><a onclick="openSocket()">建立连接</a></div>
 <p>【操作】：<div><a onclick="sendMessage()">发送回放请求</a></div>
+<p>【暂停】：<div><a onclick="stop()">暂停</a></div>
+
+<p>【结果】：<div id="res"></div></p>
 </body>
 
 </html>
