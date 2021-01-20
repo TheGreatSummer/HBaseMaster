@@ -11,7 +11,10 @@ import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.PrefixFilter;
+import org.apache.hadoop.hbase.filter.QualifierFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +37,9 @@ public class NetMonitorDao {
 
         long ts = System.currentTimeMillis();
 
-        String rowkey = yxid+"_"+ ts;
+        String tm = String.valueOf(boNetStatus.getTm());
+
+        String rowkey = yxid+"_"+tm+"_"+ ts;
 
         System.err.println(rowkey);
 
@@ -163,6 +168,42 @@ public class NetMonitorDao {
 
     }
 
+    public static Integer getMaxTM(String tableName, String rowkey_pre) {
+        try {
+            Connection connection = ConnectionFactory.createConnection(Constants.CONFIGURATION);
+            Table table = connection.getTable(TableName.valueOf(tableName));
+            Scan scan = new Scan();
+
+            QualifierFilter tmFilter = new QualifierFilter(CompareFilter.CompareOp.EQUAL, new BinaryComparator(Bytes.toBytes("Tm")));
+
+            PrefixFilter prefixFilter = new PrefixFilter(Bytes.toBytes(rowkey_pre));
+            scan.setFilter(prefixFilter);
+
+            ResultScanner scanner = table.getScanner(scan);
+            List<Integer> int_list = new ArrayList<>();
+            for (Result res : scanner) {
+                for (Cell cell : res.rawCells()) {
+                    if (Bytes.toString(CellUtil.cloneQualifier(cell)).equals("tm")) {
+                        int_list.add((Integer.valueOf(Bytes.toString(CellUtil.cloneValue(cell)))));
+
+                    }
+
+                }
+            }
+            System.out.println(int_list);
+            Integer tm_max = returnMaxInteger(int_list);
+            System.out.println(tm_max);
+
+            return tm_max;
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return 0;
+        }
+
+
+    }
+
     //  测试全体遍历的功能
     public static void scanTable(String tableName) throws IOException {
 
@@ -189,5 +230,17 @@ public class NetMonitorDao {
             }
         }
 
-    };
+    }
+
+    public static Integer returnMaxInteger(List<Integer> list) {
+        int max = 0;
+
+        for (int i = 0; i < list.size(); i++) {
+            if (max < list.get(i)) {
+                max = list.get(i);
+            }
+        }
+
+        return max;
+    }
 }

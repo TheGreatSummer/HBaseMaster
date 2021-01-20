@@ -18,7 +18,7 @@
 
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>master,node1,node2</value>
+        <value>master,node01,node02</value>
     </property>
 
     <property>
@@ -41,7 +41,8 @@
     <!-- HRegionServer.... -->
 
     <property>
-        <name>hbase.regionserver.port</name><value>16020</value>
+        <name>hbase.regionserver.port</name>
+        <value>16020</value>
         <description>The port the HBase RegionServer binds to.</description>
     </property>
 

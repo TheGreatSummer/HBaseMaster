@@ -1,6 +1,6 @@
 package com.summer.hbase;
 
-import com.summer.hbase.dao.HBaseDao;
+import com.summer.hbase.dao.DDoSDao;
 import org.junit.Test;
 
 import java.io.*;
@@ -9,7 +9,7 @@ public class TestUtil {
 
     @Test
     public void TestScan() throws IOException {
-        HBaseDao.scanTable("screen:ddos");
+        DDoSDao.scanTable("screen:ddos");
     }
 
     @Test

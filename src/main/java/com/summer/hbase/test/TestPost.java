@@ -3,7 +3,6 @@ package com.summer.hbase.test;
 
 import com.alibaba.fastjson.JSON;
 import com.summer.hbase.bean.*;
-import com.summer.hbase.dao.HBaseDao;
 import com.summer.hbase.utils.SendUtil;
 
 
@@ -50,7 +49,7 @@ public class TestPost {
         screenStatus.setLinks(linkList);
         screenStatus.setServers(serverList);
         screenStatus.setTd(tdStatus);
-        screenStatus.setTm(1);
+        screenStatus.setTm(0);
         screenStatus.setWlid("Wlid1");
         screenStatus.setVicSt(victimStatus);
 
@@ -59,20 +58,18 @@ public class TestPost {
 
         SendUtil sendUtil = new SendUtil();
 
+        for (int i = 0; i < 100; i++) {
+            System.out.println(screenStatus.toString());
 
-        sendUtil.sendToTsdb(screenStatus,"flag");
+            sendUtil.sendToTsdb(screenStatus,"hdflsjhdlfjhsadljhsadljka");
 
-        screenStatus.setWlid("wlid2");
+            screenStatus.setTm(new Long(screenStatus.getTm()).intValue() + 5);
+        }
 
-        sendUtil.sendToTsdb(screenStatus,"flag");
 
-        screenStatus.setWlid("wlid3");
 
-        sendUtil.sendToTsdb(screenStatus,"flag");
 
-        screenStatus.setWlid("wlid4");
 
-        sendUtil.sendToTsdb(screenStatus,"flag");
 
 
         System.out.println("序列化已发送...");

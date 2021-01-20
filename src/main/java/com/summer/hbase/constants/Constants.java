@@ -35,4 +35,11 @@ public class Constants {
 
     public static int NETMONITOR_TABLE_VERSIONS = 1;
 
+
+
+    // trigger & job ---> groupName
+    public static String NETMONITOR_GROUPNAME = "netmonitor";
+    public static String DDOS_GROUPNAME = "ddos";
+
+
 }

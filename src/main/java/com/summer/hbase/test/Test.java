@@ -1,8 +1,6 @@
 package com.summer.hbase.test;
 
-import com.summer.hbase.bean.BoDdosScreenStatus;
 import com.summer.hbase.constants.Constants;
-import com.summer.hbase.dao.HBaseDao;
 import com.summer.hbase.utils.HBaseUtil;
 
 import java.io.IOException;

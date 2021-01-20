@@ -2,22 +2,17 @@ package com.summer.hbase.service;
 
 
 import com.summer.hbase.bean.BoDdosScreenStatus;
-import com.summer.hbase.dao.HBaseDao;
-import com.summer.hbase.utils.SendUtil;
-import com.summer.hbase.websocket.WebSocketServer;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.util.Bytes;
+import com.summer.hbase.constants.Constants;
+import com.summer.hbase.dao.DDoSDao;
 import org.springframework.stereotype.Service;
-import sun.plugin.net.protocol.jar.CachedJarURLConnection;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class HBaseService {
+public class DDoSService {
 
 
     /**
@@ -28,7 +23,7 @@ public class HBaseService {
      */
     public List<String> listTable() throws IOException {
 
-        return HBaseDao.getTableByNameSpace();
+        return DDoSDao.getTableByNameSpace();
 
     }
 
@@ -41,16 +36,17 @@ public class HBaseService {
      */
     public Set<String> listYXID(String tableName) throws IOException {
 
-        return HBaseDao.getAllYXIDByTable(tableName);
+        return DDoSDao.getAllYXIDByTable(tableName);
 
     }
 
 
     public List<BoDdosScreenStatus> listDataByYXIDAndTm(String tableName, String yxid, double realTime, int step) throws IOException, InterruptedException {
 
+
         int int_time = judgeTime(new Double(realTime).intValue());
 
-        List<BoDdosScreenStatus> dataByYXIDPrefix = HBaseDao.getDataByYXIDPrefix(tableName, yxid);
+        List<BoDdosScreenStatus> dataByYXIDPrefix = DDoSDao.getDataByYXIDPrefix(tableName, yxid);
 
         List<BoDdosScreenStatus> send_list = new ArrayList<>();
 
@@ -70,7 +66,7 @@ public class HBaseService {
     public void scanAll() throws IOException {
 
 
-        HBaseDao.scanTable("screen:ddos");
+        DDoSDao.scanTable(Constants.DDOS_TABLE);
         System.out.println("完毕");
 
     }
